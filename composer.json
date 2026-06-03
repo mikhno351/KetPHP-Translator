@@ -1,0 +1,39 @@
+{
+  "name": "ket-php/translator",
+  "description": "Simple PHP translator",
+  "keywords": [
+    "php",
+    "locale",
+    "translator",
+    "translation",
+    "loader",
+    "ketphp",
+    "ket-php"
+  ],
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "KetPHP\\Translator\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Alexander Mikhno",
+      "email": "mikhno351@yandex.com",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": "^8.1"
+  },
+  "require-dev": {
+    "symfony/var-dumper": "^6.4"
+  },
+  "prefer-stable": true,
+  "homepage": "https://github.com/mikhno351/KetPHP-Translator",
+  "support": {
+    "issues": "https://github.com/mikhno351/KetPHP-Translator/issues",
+    "source": "https://github.com/mikhno351/KetPHP-Translator"
+  }
+}
