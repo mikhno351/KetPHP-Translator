@@ -333,15 +333,4 @@ class Locale
 
         return $constants;
     }
-
-    /**
-     * Check if the given code is a valid-supported locale.
-     *
-     * @param string $code
-     * @return bool
-     */
-    public static function isValid(string $code): bool
-    {
-        return in_array($code, self::all(), true);
-    }
 }
