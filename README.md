@@ -1,9 +1,10 @@
 # KetPHP Translator
-A flexible and powerful translation library for PHP applications that supports multiple translation formats, locale fallbacks, and various placeholder replacement methods.  
 
 ![Packagist Version](https://img.shields.io/packagist/v/ket-php/translator)
 ![Packagist Downloads](https://img.shields.io/packagist/dt/ket-php/translator?logo=packagist&logoColor=white)
 ![Static Badge](https://img.shields.io/badge/PHP-8.1-777BB4?logo=php&logoColor=white)
+
+A flexible and powerful translation library for PHP applications that supports multiple translation formats, locale fallbacks, and various placeholder replacement methods.  
 
 ## Features
 - **Multiple Loader Support** - Use different loaders for various translation file formats
