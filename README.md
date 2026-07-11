@@ -53,6 +53,7 @@ $allTranslations = $translator->translations();
 ```
 
 ### Add Translation Loaders
+Use `ArrayTranslationLoader`:
 ```php
 use KetPHP\Translator\Loader\ArrayTranslationLoader;
 
@@ -63,8 +64,45 @@ final class YourTranslationLoader extends ArrayTranslationLoader
     {
         $data = [];
         // Your realization...
-        
         parent::__construct($data);
+    }
+}
+```
+
+Use `FileTranslationLoader`:
+```php
+use KetPHP\Translator\Loader\FileTranslationLoader;
+
+final class YourTranslationLoader extends FileTranslationLoader
+{
+
+    public function __construct(private readonly string $filepath)
+    {
+    }
+
+    public function __invoke(): array
+    {
+        return $this->load($this->filepath, function (string $path): array {
+            $data = [];
+            // Your realization...
+            return $data;
+        })();
+    }
+}
+```
+
+Use `TranslationLoaderInterface`:
+```php
+use KetPHP\Translator\Common\TranslationLoaderInterface;
+
+final class YourTranslationLoader implements TranslationLoaderInterface
+{
+
+    public function __invoke(): array
+    {
+        $data = [];
+        // Your realization...
+        return $data;
     }
 }
 ```
