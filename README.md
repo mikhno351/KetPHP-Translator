@@ -43,7 +43,7 @@ $translation = [
     'language_tag' => 'be-BY',
 ];
 
-// Add translations without loader
+// Add translations with loader
 $translator->addLoader(Locale::BELARUSIAN, new ArrayTranslationLoader($translation));
 // Add translations with resource
 $translator->addResource(Locale::BELARUSIAN, $translation);
