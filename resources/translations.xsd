@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:element name="translations">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="translation" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType mixed="true">
+                        <xs:attribute name="key" type="xs:string" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+        <xs:key name="translationKey">
+            <xs:selector xpath="translation"/>
+            <xs:field xpath="@key"/>
+        </xs:key>
+    </xs:element>
+</xs:schema>
