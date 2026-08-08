@@ -55,16 +55,17 @@ final class JsonTranslationLoader extends FileTranslationLoader
         $flags = JSON_THROW_ON_ERROR | $this->flags;
 
         return $this->load($this->filepath, function (string $path) use ($flags) {
+            $filename = basename($path);
             $content = file_get_contents($path);
 
             if ($content === false) {
-                throw new InvalidArgumentException(sprintf('Unable to read file "%s".', $path));
+                throw new InvalidArgumentException(sprintf('Unable to read file "%s".', $filename));
             }
 
             try {
                 return json_decode($content, true, 512, $flags) ?? [];
             } catch (Throwable $exception) {
-                throw new InvalidArgumentException(sprintf('Invalid JSON in file "%s": %s.', $path, $exception->getMessage()), 0, $exception);
+                throw new InvalidArgumentException(sprintf('Invalid JSON in file "%s": %s.', $filename, $exception->getMessage()), 0, $exception);
             }
         })();
     }

@@ -49,10 +49,10 @@ final class IniTranslationLoader extends FileTranslationLoader
                 throw new InvalidArgumentException('The "parse_ini_file" function is disabled or not available in this PHP environment.');
             }
 
-            $data = @parse_ini_file($path, true);
+            $data = parse_ini_file($path, true);
 
             if ($data === false) {
-                throw new InvalidArgumentException(sprintf('Invalid INI format in file "%s".', $path));
+                throw new InvalidArgumentException(sprintf('Invalid INI format in file "%s".', basename($path)));
             }
 
             return $data;
