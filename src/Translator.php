@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace KetPHP\Translator;
 
+use KetPHP\Translator\Common\TranslationFallbackInterface;
 use KetPHP\Translator\Common\TranslationLoaderInterface;
 use KetPHP\Translator\Common\TranslatorInterface;
 use KetPHP\Translator\Loader\ArrayTranslationLoader;
 
 /**
- * Translator implementation for handling multiple language translations.
+ * Static single-locale Translator implementation.
  *
  * Supports loading translation files from different locales, merging fallback translations,
  * and replacing placeholders in translation strings with both positional and named parameters.
@@ -23,22 +24,20 @@ final class Translator implements TranslatorInterface
     private array $catalogues = [];
 
     /**
-     * @var string[] Cache of loaded translations
+     * @var string[] Merged translations cache
      */
     private array $translations = [];
 
-    /**
-     * @var string[]
-     */
-    private array $loadedIds = [];
+    private bool $initialized = false;
 
     /**
      * Constructor
      *
      * @param string $localeDefault Default locale code to use as fallback
      * @param string|null $locale Current locale code (uses `$localeDefault` if null)
+     * @param class-string<TranslationFallbackInterface> $translationFallback Fallback handler class
      */
-    public function __construct(private readonly string $localeDefault, private ?string $locale = null)
+    public function __construct(private readonly string $localeDefault, private ?string $locale = null, private readonly string $translationFallback = TranslationFallback::class)
     {
         $this->locale ??= $this->localeDefault;
     }
@@ -53,6 +52,7 @@ final class Translator implements TranslatorInterface
     public function addLoader(string $locale, TranslationLoaderInterface $loader): void
     {
         $this->catalogues[$locale][] = $loader;
+        $this->initialized = false;
     }
 
     /**
@@ -74,7 +74,7 @@ final class Translator implements TranslatorInterface
      */
     public function translations(): array
     {
-        $this->initLocales();
+        $this->init();
         return $this->translations;
     }
 
@@ -88,9 +88,12 @@ final class Translator implements TranslatorInterface
      */
     public function translate(string $key, array $params = [], ?string $default = null): string
     {
-        $this->initLocales();
+        $this->init();
 
-        $value = ($this->translations[$key] ?? ($default ?? $key));
+        $value = $this->translations[$key] ?? $default;
+        if ($value === null) {
+            $value = (new $this->translationFallback($key, $this->locale))();
+        }
 
         if (empty($params) === true) {
             return $value;
@@ -104,28 +107,23 @@ final class Translator implements TranslatorInterface
         return strtr($value, $placeholders);
     }
 
-    private function initLocales(): void
+    private function init(): void
     {
-        $targetLocales = array_unique([$this->localeDefault, $this->locale]);
-
-        foreach ($targetLocales as $locale) {
-            $this->initLocale($locale);
-        }
-    }
-
-    private function initLocale(string $locale): void
-    {
-        if (isset($this->catalogues[$locale]) === false) {
+        if ($this->initialized) {
             return;
         }
 
-        foreach ($this->catalogues[$locale] as $loader) {
-            $loaderId = spl_object_hash($loader);
+        $this->translations = [];
+        $targetLocales = array_unique([$this->localeDefault, $this->locale]);
 
-            if (isset($this->loadedIds[$loaderId]) === false) {
-                $this->translations = array_replace($this->translations, $loader());
-                $this->loadedIds[$loaderId] = true;
+        foreach ($targetLocales as $locale) {
+            if (isset($this->catalogues[$locale]) === true) {
+                foreach ($this->catalogues[$locale] as $loader) {
+                    $this->translations = array_replace($this->translations, $loader());
+                }
             }
         }
+
+        $this->initialized = true;
     }
 }
