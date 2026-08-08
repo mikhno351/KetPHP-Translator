@@ -11,6 +11,7 @@ A flexible and powerful translation library for PHP applications that supports m
 - **Locale Fallback** - Automatic fallback to default locale when translations are missing
 - **Dot Notation** - Access nested translation keys using dot notation
 - **Error Resilient** - Graceful handling of missing translations and formatting errors
+- **Support** - Array, PHP File, INI File, JSON File, XML File 
 
 ## Installation
 ```composer
@@ -30,26 +31,44 @@ use KetPHP\Translator\Locale;
 
 $translator = new Translator(
     localeDefault: 'en', // another use \KetPHP\Translator\Locale::ENGLISH - en
-    locale: 'ru' // current locale (optional, uses localeDefault if null)
+    locale: 'be', // current locale (optional, uses localeDefault if null)
+    translationFallback: TranslationFallback::class // current fallback handler (optional)
 );
 
 // Add translations with loader
 $translator->addLoader(Locale::ENGLISH, new PhpTranslationLoader('/absolute/path/to/en.php'));
 // Combine loaders (locale pages)
-$translator->addLoader(Locale::RUSSIAN, new JsonTranslationLoader('/absolute/path/to/ru.json'));
-$translator->addLoader(Locale::RUSSIAN, new PhpTranslationLoader('/absolute/path/to/ru.php'));
+$translator->addLoader(Locale::BELARUSIAN, new JsonTranslationLoader('/absolute/path/to/be.json'));
+$translator->addLoader(Locale::BELARUSIAN, new PhpTranslationLoader('/absolute/path/to/be.php'));
 
 $translation = [
-    'language_tag' => 'be-BY',
+    'language_tag' => 'fr-FR',
 ];
 
 // Add translations with loader
-$translator->addLoader(Locale::BELARUSIAN, new ArrayTranslationLoader($translation));
+$translator->addLoader(Locale::FRENCH, new ArrayTranslationLoader($translation));
 // Add translations with resource
-$translator->addResource(Locale::BELARUSIAN, $translation);
+$translator->addResource(Locale::FRENCH, $translation); // contained ArrayTranslationLoader
 
 $allTranslations = $translator->translations();
 // Returns merged array of current locale + default locale translations
+```
+
+### Add Fallback
+
+Use `TranslationFallbackInteface`:
+
+```php
+use KetPHP\Translator\Common\TranslationFallbackInterface;
+
+final class YourTranslationFallback implements TranslationFallbackInterface
+{
+
+    public function __invoke(string $key, string $locale): string
+    {
+        return $key;
+    }
+}
 ```
 
 ### Add Translation Loaders
@@ -87,15 +106,14 @@ Example: en.php
     ]
 ];
 ```
-Example: ru.json
+Example: be.json
 ```json
 {
-  "language_tag": "ru-RU",
+  "language_tag": "be-BY",
   "user": {
     "profile": {
-      "greeting": "Добро пожаловать, {name}!",
-      "welcome_back": "С возвращением, {name}!",
-      "messages": "У вас {count} новых сообщений"
+      "greeting": "Прывітанне, {name}!",
+      "messages": "У вас {count} новых паведамленняў"
     }
   }
 }
@@ -112,15 +130,11 @@ echo $translator->translate('user.profile.greeting', default: 'Welcome!');
 // Output: "Welcome, {name}!" (fallback to key if no default provided)
 
 // Named Placeholders
-echo $translator->translate('user.profile.greeting', ['name' => 'John'] ,'Welcome!');
+echo $translator->translate('user.profile.greeting', ['name' => 'John'], 'Welcome!');
 // Output: "Welcome, John!"
 
 echo $translator->translate('user.profile.messages', ['count' => 5]);
 // Output: "You have 5 new messages"
-
-// Key exists only in default locale (en)
-echo $translator->translate('errors.not_found');
-// Output: "The requested resource was not found" (falls back to English)
 
 // Non-existent key with default value
 echo $translator->translate('nonexistent.key', default: 'Default value');
