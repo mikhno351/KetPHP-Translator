@@ -18,6 +18,8 @@ use KetPHP\Translator\Loader\ArrayTranslationLoader;
 final class Translator implements TranslatorInterface
 {
 
+    private readonly TranslationFallbackInterface $translationFallback;
+
     /**
      * @var array<string, TranslationLoaderInterface[]> Array of locale catalogues keyed by locale code
      */
@@ -37,9 +39,10 @@ final class Translator implements TranslatorInterface
      * @param string|null $locale Current locale code (uses `$localeDefault` if null)
      * @param class-string<TranslationFallbackInterface> $translationFallback Fallback handler class
      */
-    public function __construct(private readonly string $localeDefault, private ?string $locale = null, private readonly string $translationFallback = TranslationFallback::class)
+    public function __construct(private readonly string $localeDefault, private ?string $locale = null, string $translationFallback = TranslationFallback::class)
     {
         $this->locale ??= $this->localeDefault;
+        $this->translationFallback = new $translationFallback();
     }
 
     /**
@@ -92,7 +95,7 @@ final class Translator implements TranslatorInterface
 
         $value = $this->translations[$key] ?? $default;
         if ($value === null) {
-            $value = (new $this->translationFallback($key, $this->locale))();
+            $value = ($this->translationFallback)($key, $this->locale);
         }
 
         if (empty($params) === true) {
