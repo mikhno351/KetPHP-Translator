@@ -7,7 +7,5 @@ namespace KetPHP\Translator\Common;
 interface TranslationFallbackInterface
 {
 
-    public function __construct(string $key, string $locale);
-
-    public function __invoke(): string;
+    public function __invoke(string $key, string $locale): string;
 }
