@@ -89,7 +89,7 @@ final class Translator implements TranslatorInterface
      * @param string|null $default Default value if key not found (uses key if null)
      * @return string Translated string with replaced placeholders
      */
-    public function translate(string $key, array $params = [], ?string $default = null): string
+    public function translate(string $key, array $params = [], ?string $default = null, bool $html = false): string
     {
         $this->init();
 
@@ -98,13 +98,21 @@ final class Translator implements TranslatorInterface
             $value = ($this->translationFallback)($key, $this->locale);
         }
 
+        if ($html === false) {
+            $value = htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        }
+
         if (empty($params) === true) {
             return $value;
         }
 
         $placeholders = [];
         foreach ($params as $k => $v) {
-            $placeholders['{' . $k . '}'] = (string)$v;
+            $val = (string)$v;
+            if ($html === false) {
+                $val = htmlspecialchars($val, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            }
+            $placeholders['{' . $k . '}'] = $val;
         }
 
         return strtr($value, $placeholders);
@@ -112,7 +120,7 @@ final class Translator implements TranslatorInterface
 
     private function init(): void
     {
-        if ($this->initialized) {
+        if ($this->initialized === true) {
             return;
         }
 
