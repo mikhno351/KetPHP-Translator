@@ -7,7 +7,7 @@ namespace KetPHP\Translator\Common;
 interface TranslatorInterface
 {
 
-    public function translate(string $key, array $params = [], ?string $default = null): string;
+    public function translate(string $key, array $params = [], ?string $default = null, bool $html = false): string;
 
     public function translations(): array;
 }
