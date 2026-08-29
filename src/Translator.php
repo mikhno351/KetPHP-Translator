@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace KetPHP\Translator;
 
-use KetPHP\Translator\Common\TranslatorFallbackHandlerInterface;
 use KetPHP\Translator\Common\TranslationLoaderInterface;
+use KetPHP\Translator\Common\TranslatorFallbackHandlerInterface;
 use KetPHP\Translator\Common\TranslatorInterface;
+use KetPHP\Translator\Handler\TranslatorFallbackHandler;
 use KetPHP\Translator\Loader\ArrayTranslationLoader;
 
 /**

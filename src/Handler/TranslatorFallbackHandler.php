@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace KetPHP\Translator;
+namespace KetPHP\Translator\Handler;
 
 use KetPHP\Translator\Common\TranslatorFallbackHandlerInterface;
 
