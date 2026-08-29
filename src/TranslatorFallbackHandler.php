@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace KetPHP\Translator;
 
-use KetPHP\Translator\Common\TranslationFallbackInterface;
+use KetPHP\Translator\Common\TranslatorFallbackHandlerInterface;
 
-final class TranslationFallback implements TranslationFallbackInterface
+final class TranslatorFallbackHandler implements TranslatorFallbackHandlerInterface
 {
 
     public function __invoke(string $key, string $locale): string

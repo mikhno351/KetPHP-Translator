@@ -32,7 +32,7 @@ use KetPHP\Translator\Locale;
 $translator = new Translator(
     localeDefault: 'en', // another use \KetPHP\Translator\Locale::ENGLISH - en
     locale: 'be', // current locale (optional, uses localeDefault if null)
-    translationFallback: TranslationFallback::class // current fallback handler (optional)
+    fallbackHandler: null // current fallback handler (optional, default uses TranslatorFallbackHandler)
 );
 
 // Add translations with loader
@@ -59,9 +59,9 @@ $allTranslations = $translator->translations();
 Use `TranslationFallbackInteface`:
 
 ```php
-use KetPHP\Translator\Common\TranslationFallbackInterface;
+use KetPHP\Translator\Common\TranslatorFallbackHandlerInterface;
 
-final class YourTranslationFallback implements TranslationFallbackInterface
+final class YourTranslationFallback implements TranslatorFallbackHandlerInterface
 {
 
     public function __invoke(string $key, string $locale): string

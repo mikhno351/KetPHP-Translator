@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace KetPHP\Translator;
 
-use KetPHP\Translator\Common\TranslationFallbackInterface;
+use KetPHP\Translator\Common\TranslatorFallbackHandlerInterface;
 use KetPHP\Translator\Common\TranslationLoaderInterface;
 use KetPHP\Translator\Common\TranslatorInterface;
 use KetPHP\Translator\Loader\ArrayTranslationLoader;
@@ -18,7 +18,7 @@ use KetPHP\Translator\Loader\ArrayTranslationLoader;
 final class Translator implements TranslatorInterface
 {
 
-    private readonly TranslationFallbackInterface $translationFallback;
+    private readonly TranslatorFallbackHandlerInterface $fallbackHandler;
 
     /**
      * @var array<string, TranslationLoaderInterface[]> Array of locale catalogues keyed by locale code
@@ -37,12 +37,12 @@ final class Translator implements TranslatorInterface
      *
      * @param string $localeDefault Default locale code to use as fallback
      * @param string|null $locale Current locale code (uses `$localeDefault` if null)
-     * @param class-string<TranslationFallbackInterface> $translationFallback Fallback handler class
+     * @param ?TranslatorFallbackHandlerInterface $fallbackHandler Fallback handler class (default uses `TranslatorFallbackHandler`)
      */
-    public function __construct(private readonly string $localeDefault, private ?string $locale = null, string $translationFallback = TranslationFallback::class)
+    public function __construct(private readonly string $localeDefault, private ?string $locale = null, ?TranslatorFallbackHandlerInterface $fallbackHandler = null)
     {
         $this->locale ??= $this->localeDefault;
-        $this->translationFallback = new $translationFallback();
+        $this->fallbackHandler = $fallbackHandler ?? new TranslatorFallbackHandler();
     }
 
     /**
@@ -95,7 +95,7 @@ final class Translator implements TranslatorInterface
 
         $value = $this->translations[$key] ?? $default;
         if ($value === null) {
-            $value = ($this->translationFallback)($key, $this->locale);
+            $value = ($this->fallbackHandler)($key, $this->locale);
         }
 
         if ($html === false) {
