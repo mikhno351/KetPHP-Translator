@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace KetPHP\Translator\Loader;
 
 use InvalidArgumentException;
+use KetPHP\Translator\Exception\IOException;
+use KetPHP\Translator\Exception\LoaderParseException;
+use KetPHP\Translator\Exception\LoaderUnavailableException;
 
 /**
  * Translation loader that loads translation data from INI files
@@ -25,9 +28,9 @@ final class IniTranslationLoader extends FileTranslationLoader
      *
      * @param string $filepath Path to the INI file containing translation data
      *
-     * @throws InvalidArgumentException If the parse_ini_file function is disabled
-     * @throws InvalidArgumentException If the file does not exist or is not readable
-     * @throws InvalidArgumentException If the INI file is invalid or cannot be parsed
+     * @throws LoaderUnavailableException If the parse_ini_file function is disabled
+     * @throws LoaderParseException If the INI file is invalid or cannot be parsed
+     * @throws IOException If the file does not exist or is not readable
      *
      * @example
      * // Example INI translation file (en.ini):
@@ -46,16 +49,9 @@ final class IniTranslationLoader extends FileTranslationLoader
     {
         return $this->load($this->filepath, function (string $path): array {
             if (function_exists('parse_ini_file') === false) {
-                throw new InvalidArgumentException('The "parse_ini_file" function is disabled or not available in this PHP environment.');
+                throw new LoaderUnavailableException('The "parse_ini_file" function is disabled or not available in this PHP environment.');
             }
-
-            $data = parse_ini_file($path, true);
-
-            if ($data === false) {
-                throw new InvalidArgumentException(sprintf('Invalid INI format in file "%s".', basename($path)));
-            }
-
-            return $data;
+            return parse_ini_file($path, true);
         })();
     }
 }

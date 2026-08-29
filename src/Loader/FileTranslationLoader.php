@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace KetPHP\Translator\Loader;
 
-use InvalidArgumentException;
 use KetPHP\Translator\Common\TranslationLoaderInterface;
+use KetPHP\Translator\Exception\IOException;
+use KetPHP\Translator\Exception\LoaderParseException;
 
 /**
  * Translation loader that loads translation data files
@@ -29,7 +30,8 @@ abstract class FileTranslationLoader implements TranslationLoaderInterface
      * @param callable $callable Callback function that handles the actual file parsing
      * @return ArrayTranslationLoader The parsed translation data
      *
-     * @throws InvalidArgumentException If the file is missing, not readable, or does not return an array
+     * @throws IOException If the file is missing, not readable
+     * @throws LoaderParseException If the file does not return an array
      *
      * @example
      * $data = $this->load($filepath, function($path) {
@@ -39,15 +41,11 @@ abstract class FileTranslationLoader implements TranslationLoaderInterface
     protected function load(string $filepath, callable $callable): ArrayTranslationLoader
     {
         if (is_file($filepath) === false || is_readable($filepath) === false) {
-            throw new InvalidArgumentException(sprintf('File "%s" does not exist or is not readable.', $filepath));
+            throw new IOException(sprintf('File "%s" does not exist or is not readable.', $filepath));
         }
-
-        $data = $callable($filepath);
-
-        if (is_array($data) === false) {
-            throw new InvalidArgumentException(sprintf('File "%s" must return an array, got "%s".', $filepath, gettype($data)));
+        if (is_array($data = $callable($filepath)) === false) {
+            throw new LoaderParseException(sprintf('File "%s" must return an array, got "%s".', $filepath, gettype($data)));
         }
-
         return new ArrayTranslationLoader((array)$data);
     }
 }

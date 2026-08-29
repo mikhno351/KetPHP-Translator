@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace KetPHP\Translator\Loader;
 
 use InvalidArgumentException;
+use KetPHP\Translator\Exception\IOException;
+use KetPHP\Translator\Exception\LoaderParseException;
+use KetPHP\Translator\Exception\LoaderUnavailableException;
 use SimpleXMLElement;
 use Throwable;
 
@@ -24,9 +27,9 @@ final class XmlTranslationLoader extends FileTranslationLoader
      *
      * @param string $filepath Path to the XML file containing translation data
      *
-     * @throws InvalidArgumentException If the XML file does not exist,
-     *                                  is not readable, or contains invalid
-     *                                  translation data.
+     * @throws LoaderUnavailableException If the SimpleXMLElement::class does not exists
+     * @throws LoaderParseException If the XML file is invalid or cannot be parsed
+     * @throws IOException If the file does not exist or is not readable
      *
      * @example
      * // Example XML translation file (en.xml):
@@ -47,43 +50,43 @@ final class XmlTranslationLoader extends FileTranslationLoader
     {
         return $this->load($this->filepath, function (string $path): array {
             if (class_exists(SimpleXMLElement::class) === false) {
-                throw new InvalidArgumentException('The "SimpleXML" extension is disabled or not available in this PHP environment.');
+                throw new LoaderUnavailableException('The "SimpleXML" extension is disabled or not available in this PHP environment.');
             }
 
             $filename = basename($path);
             $content = file_get_contents($path);
 
             if ($content === false) {
-                throw new InvalidArgumentException(sprintf('Unable to read file "%s".', $filename));
+                throw new LoaderParseException(sprintf('Unable to read file "%s".', $filename));
             }
 
             try {
                 $xml = new SimpleXMLElement($content);
             } catch (Throwable $exception) {
-                throw new InvalidArgumentException(sprintf('Invalid XML in file "%s": %s.', $filename, $exception->getMessage()), 0, $exception);
+                throw new LoaderParseException(sprintf('Invalid XML in file "%s": %s.', $filename, $exception->getMessage()), 0, $exception);
             }
 
             if ($xml->getName() !== 'translations') {
-                throw new InvalidArgumentException(sprintf('Invalid root element in file "%s". Expected "translations", got "%s".', $filename, $xml->getName()));
+                throw new LoaderParseException(sprintf('Invalid root element in file "%s". Expected "translations", got "%s".', $filename, $xml->getName()));
             }
 
             $translations = [];
 
             foreach ($xml->children() as $translation) {
                 if ($translation->getName() !== 'translation') {
-                    throw new InvalidArgumentException(sprintf('Invalid element "%s" in file "%s". Expected "translation".', $translation->getName(), $filename));
+                    throw new LoaderParseException(sprintf('Invalid element "%s" in file "%s". Expected "translation".', $translation->getName(), $filename));
                 }
 
                 $key = (string)$translation['key'];
 
                 if (empty($key) === true) {
-                    throw new InvalidArgumentException(sprintf('Translation key cannot be empty in file "%s".', $filename));
+                    throw new LoaderParseException(sprintf('Translation key cannot be empty in file "%s".', $filename));
                 }
                 if (array_key_exists($key, $translations) === true) {
-                    throw new InvalidArgumentException(sprintf('Duplicate translation key "%s" in file "%s".', $key, $filename));
+                    throw new LoaderParseException(sprintf('Duplicate translation key "%s" in file "%s".', $key, $filename));
                 }
                 if ($translation->count() > 0) {
-                    throw new InvalidArgumentException(sprintf('Translation "%s" in file "%s" cannot contain child elements.', $key, $filename));
+                    throw new LoaderParseException(sprintf('Translation "%s" in file "%s" cannot contain child elements.', $key, $filename));
                 }
 
                 $translations[$key] = (string)$translation;

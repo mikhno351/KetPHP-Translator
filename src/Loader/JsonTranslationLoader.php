@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace KetPHP\Translator\Loader;
 
-use InvalidArgumentException;
+use KetPHP\Translator\Exception\IOException;
+use KetPHP\Translator\Exception\LoaderParseException;
 use Throwable;
 
 /**
@@ -27,9 +28,9 @@ final class JsonTranslationLoader extends FileTranslationLoader
      * @param string $filepath Path to the JSON file containing translation data
      * @param int $flags JSON decode flags (optional, defaults to JSON_THROW_ON_ERROR)
      *
-     * @throws InvalidArgumentException If the file does not exist or is not readable
-     * @throws InvalidArgumentException If the JSON is invalid or cannot be decoded
-     * @throws InvalidArgumentException If the decoded JSON is not an array
+     * @throws LoaderParseException If the JSON is invalid or cannot be decoded
+     * @throws LoaderParseException If the decoded JSON is not an array
+     * @throws IOException If the file does not exist or is not readable
      *
      * @example
      * // Example JSON translation file (en.json):
@@ -59,13 +60,13 @@ final class JsonTranslationLoader extends FileTranslationLoader
             $content = file_get_contents($path);
 
             if ($content === false) {
-                throw new InvalidArgumentException(sprintf('Unable to read file "%s".', $filename));
+                throw new LoaderParseException(sprintf('Unable to read file "%s".', $filename));
             }
 
             try {
                 return json_decode($content, true, 512, $flags) ?? [];
             } catch (Throwable $exception) {
-                throw new InvalidArgumentException(sprintf('Invalid JSON in file "%s": %s.', $filename, $exception->getMessage()), 0, $exception);
+                throw new LoaderParseException(sprintf('Invalid JSON in file "%s": %s.', $filename, $exception->getMessage()), $exception->getCode(), $exception);
             }
         })();
     }

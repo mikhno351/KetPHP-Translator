@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace KetPHP\Translator\Loader;
 
-use InvalidArgumentException;
+use KetPHP\Translator\Exception\IOException;
+use KetPHP\Translator\Exception\LoaderParseException;
 
 /**
  * Translation loader that loads translation data from PHP files
@@ -25,8 +26,8 @@ final class PhpTranslationLoader extends FileTranslationLoader
      *
      * @param string $filepath Path to the PHP file containing translation data
      *
-     * @throws InvalidArgumentException If the specified file does not exist or is not readable
-     * @throws InvalidArgumentException If the PHP file does not return an array
+     * @throws LoaderParseException If the PHP file does not return an array
+     * @throws IOException If the specified file does not exist or is not readable
      *
      * @example
      * // Example PHP translation file (en.php):
