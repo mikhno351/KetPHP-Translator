@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace KetPHP\Translator;
 
 use KetPHP\Translator\Common\TranslationLoaderInterface;
-use KetPHP\Translator\Common\TranslatorFallbackHandlerInterface;
+use KetPHP\Translator\Common\TranslatorFallbackFormatterInterface;
 use KetPHP\Translator\Common\TranslatorInterface;
-use KetPHP\Translator\Handler\TranslatorFallbackHandler;
+use KetPHP\Translator\Formatter\TranslatorFallbackFormatter;
 use KetPHP\Translator\Loader\ArrayTranslationLoader;
 
 /**
@@ -18,8 +18,6 @@ use KetPHP\Translator\Loader\ArrayTranslationLoader;
  */
 final class Translator implements TranslatorInterface
 {
-
-    private readonly TranslatorFallbackHandlerInterface $fallbackHandler;
 
     /**
      * @var array<string, TranslationLoaderInterface[]> Array of locale catalogues keyed by locale code
@@ -38,18 +36,43 @@ final class Translator implements TranslatorInterface
      *
      * @param string $localeDefault Default locale code to use as fallback
      * @param string|null $locale Current locale code (uses `$localeDefault` if null)
-     * @param ?TranslatorFallbackHandlerInterface $fallbackHandler Fallback handler class (default uses `TranslatorFallbackHandler`)
+     * @param ?TranslatorFallbackFormatterInterface $fallbackFormatter Fallback handler class (default uses `TranslatorFallbackFormatter`)
      */
-    public function __construct(private readonly string $localeDefault, private ?string $locale = null, ?TranslatorFallbackHandlerInterface $fallbackHandler = null)
+    public function __construct(private readonly string $localeDefault, private ?string $locale = null, private ?TranslatorFallbackFormatterInterface $fallbackFormatter = null)
     {
-        $this->locale ??= $this->localeDefault;
-        $this->fallbackHandler = $fallbackHandler ?? new TranslatorFallbackHandler();
+        $this->setLocale($locale);
+        $this->setFallbackFormatter($fallbackFormatter);
+    }
+
+    /**
+     * Sets the current locale.
+     *
+     * Re-initializes the translations on the next translation lookup.
+     *
+     * @param string|null $locale Locale code or null to revert to the default locale
+     * @return void
+     */
+    public function setLocale(?string $locale): void
+    {
+        $this->locale = $locale ?? $this->localeDefault;
+        $this->initialized = false;
+    }
+
+    /**
+     * Sets the fallback formatter used when a translation key is not found.
+     *
+     * @param TranslatorFallbackFormatterInterface|null $formatter Formatter instance or null to use the default fallback formatter
+     * @return void
+     */
+    public function setFallbackFormatter(?TranslatorFallbackFormatterInterface $formatter): void
+    {
+        $this->fallbackFormatter = $formatter ?? new TranslatorFallbackFormatter();
     }
 
     /**
      * Add a locale catalogue with translations
      *
-     * @param string $locale Locale code (e.g., 'en', 'fr')
+     * @param string $locale Locale code (e.g., 'en', 'en_US', 'english' and etc..)
      * @param TranslationLoaderInterface $loader Loader for translation
      * @return void
      */
@@ -62,13 +85,33 @@ final class Translator implements TranslatorInterface
     /**
      * Add a locale catalogue with translations
      *
-     * @param string $locale Locale code (e.g., 'en', 'fr')
+     * @param string $locale Locale code (e.g., 'en', 'en_US', 'english' and etc..)
      * @param array $translations Data for translation
      * @return void
      */
     public function addResource(string $locale, array $translations): void
     {
         $this->addLoader($locale, new ArrayTranslationLoader($translations));
+    }
+
+    /**
+     * Get the default fallback locale code.
+     *
+     * @return string Default locale code
+     */
+    public function getLocaleDefault(): string
+    {
+        return $this->localeDefault;
+    }
+
+    /**
+     * Get the current active locale code.
+     *
+     * @return string Current locale code
+     */
+    public function getLocale(): string
+    {
+        return $this->locale;
     }
 
     /**
@@ -96,7 +139,7 @@ final class Translator implements TranslatorInterface
 
         $value = $this->translations[$key] ?? $default;
         if ($value === null) {
-            $value = ($this->fallbackHandler)($key, $this->locale);
+            $value = ($this->fallbackFormatter)($key, $this->locale);
         }
 
         if ($html === false) {
@@ -126,7 +169,7 @@ final class Translator implements TranslatorInterface
         }
 
         $this->translations = [];
-        $targetLocales = array_unique([$this->localeDefault, $this->locale]);
+        $targetLocales = array_unique(array_filter([$this->getLocaleDefault(), $this->getLocale()]));
 
         foreach ($targetLocales as $locale) {
             if (isset($this->catalogues[$locale]) === true) {
@@ -136,6 +179,6 @@ final class Translator implements TranslatorInterface
             }
         }
 
-        $this->initialized = true;
+        $this->initialized = count($targetLocales) > 0;
     }
 }
