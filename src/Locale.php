@@ -30,6 +30,15 @@ class Locale
     /** @var string Azerbaijani */
     public const AZERBAIJANI = 'az';
 
+    /** @var string Afar */
+    public const AFAR = 'aa';
+
+    /** @var string Abkhazian */
+    public const ABKHAZIAN = 'ab';
+
+    /** @var string Avestan */
+    public const AVESTAN = 'ae';
+
     /** @var string Basque */
     public const BASQUE = 'eu';
 
@@ -45,6 +54,18 @@ class Locale
     /** @var string Bulgarian */
     public const BULGARIAN = 'bg';
 
+    /** @var string Bashkir */
+    public const BASHKIR = 'ba';
+
+    /** @var string Bislama */
+    public const BISLAMA = 'bi';
+
+    /** @var string Burmese */
+    public const BURMESE = 'my';
+
+    /** @var string Bihari */
+    public const BIHARI = 'bh';
+
     /** @var string Catalan */
     public const CATALAN = 'ca';
 
@@ -59,6 +80,9 @@ class Locale
 
     /** @var string Czech */
     public const CZECH = 'cs';
+
+    /** @var string Chichewa */
+    public const CHICHEWA = 'ny';
 
     /** @var string Danish */
     public const DANISH = 'da';
@@ -105,6 +129,12 @@ class Locale
     /** @var string Hungarian */
     public const HUNGARIAN = 'hu';
 
+    /** @var string Hausa */
+    public const HAUSA = 'ha';
+
+    /** @var string Haitian */
+    public const HAITIAN = 'ht';
+
     /** @var string Icelandic */
     public const ICELANDIC = 'is';
 
@@ -141,6 +171,9 @@ class Locale
     /** @var string Kyrgyz */
     public const KYRGYZ = 'ky';
 
+    /** @var string Kinyarwanda */
+    public const KINYARWANDA = 'rw';
+
     /** @var string Lao */
     public const LAO = 'lo';
 
@@ -152,6 +185,9 @@ class Locale
 
     /** @var string Luxembourgish */
     public const LUXEMBOURGISH = 'lb';
+
+    /** @var string Latin */
+    public const LATIN = 'la';
 
     /** @var string Macedonian */
     public const MACEDONIAN = 'mk';
@@ -177,6 +213,9 @@ class Locale
     /** @var string Mongolian */
     public const MONGOLIAN = 'mn';
 
+    /** @var string Moldavian */
+    public const MOLDAVIAN = 'mo';
+
     /** @var string Nepali */
     public const NEPALI = 'ne';
 
@@ -200,6 +239,9 @@ class Locale
 
     /** @var string Punjabi */
     public const PUNJABI = 'pa';
+
+    /** @var string Quechua */
+    public const QUECHUA = 'qu';
 
     /** @var string Romanian */
     public const ROMANIAN = 'ro';
@@ -249,6 +291,9 @@ class Locale
     /** @var string Swedish */
     public const SWEDISH = 'sv';
 
+    /** @var string Sanskrit */
+    public const SANSKRIT = 'sa';
+
     /** @var string Tagalog */
     public const TAGALOG = 'tl';
 
@@ -270,6 +315,9 @@ class Locale
     /** @var string Turkish */
     public const TURKISH = 'tr';
 
+    /** @var string Tibetan */
+    public const TIBETAN = 'bo';
+
     /** @var string Turkmen */
     public const TURKMEN = 'tk';
 
@@ -281,6 +329,9 @@ class Locale
 
     /** @var string Uzbek */
     public const UZBEK = 'uz';
+
+    /** @var string Uighur */
+    public const UIGHUR = 'ug';
 
     /** @var string Vietnamese */
     public const VIETNAMESE = 'vi';
@@ -300,24 +351,6 @@ class Locale
     /** @var string Zulu */
     public const ZULU = 'zu';
 
-    /** @var string Bashkir */
-    public const BASHKIR = 'ba';
-
-    /** @var string Hausa */
-    public const HAUSA = 'ha';
-
-    /** @var string Latin */
-    public const LATIN = 'la';
-
-    /** @var string Quechua */
-    public const QUECHUA = 'qu';
-
-    /** @var string Sanskrit */
-    public const SANSKRIT = 'sa';
-
-    /** @var string Tibetan */
-    public const TIBETAN = 'bo';
-
     /**
      * Get all language constants as array.
      *
@@ -330,7 +363,6 @@ class Locale
         if ($constants === null) {
             $constants = (new ReflectionClass(static::class))->getConstants();
         }
-
         return $constants;
     }
 }
