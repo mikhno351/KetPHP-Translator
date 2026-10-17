@@ -10,8 +10,8 @@ A flexible and powerful translation library for PHP applications that supports m
 - **Multiple Loader Support** - Use different loaders for various translation file formats
 - **Locale Fallback** - Automatic fallback to default locale when translations are missing
 - **Dot Notation** - Access nested translation keys using dot notation
-- **Error Resilient** - Graceful handling of missing translations and formatting errors
-- **Support** - Array, PHP File, INI File, JSON File, XML File 
+- **Fallback Formatter** - Graceful handling of missing translations and formatting errors
+- **Support** - Array, PHP File, INI File, JSON File, XML File, YAML File 
 
 ## Installation
 ```composer
@@ -32,7 +32,7 @@ use KetPHP\Translator\Locale;
 $translator = new Translator(
     localeDefault: 'en', // another use \KetPHP\Translator\Locale::ENGLISH - en
     locale: 'be', // current locale (optional, uses localeDefault if null)
-    fallbackHandler: null // current fallback handler (optional, default uses TranslatorFallbackHandler)
+    fallbackFormatter: null // current fallback handler (optional, default uses TranslatorFallbackFormatter)
 );
 
 // Add translations with loader
@@ -54,14 +54,14 @@ $allTranslations = $translator->translations();
 // Returns merged array of current locale + default locale translations
 ```
 
-### Add Fallback
+### Add Fallback Formatter
 
-Use `TranslationFallbackInteface`:
+Use `TranslatorFallbackFormatterInterface`:
 
 ```php
-use KetPHP\Translator\Common\TranslatorFallbackHandlerInterface;
+use KetPHP\Translator\Common\TranslatorFallbackFormatterInterface;
 
-final class YourTranslationFallback implements TranslatorFallbackHandlerInterface
+final class YourTranslationFallback implements TranslatorFallbackFormatterInterface
 {
 
     public function __invoke(string $key, string $locale): string
