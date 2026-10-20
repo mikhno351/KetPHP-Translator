@@ -18,7 +18,7 @@ abstract class AbstractTranslationLoaderTest extends TestCase
 
     public function testLoaderContent(): void
     {
-        $this->assertEquals(['message' => 'Message'], ($this->loader)());
+        $this->assertEquals(['key.message' => 'Message'], ($this->loader)());
     }
 
     public function testTranslatorWithLoader(): void
@@ -26,6 +26,6 @@ abstract class AbstractTranslationLoaderTest extends TestCase
         $translator = new Translator(Locale::ENGLISH);
         $translator->addLoader(Locale::ENGLISH, $this->loader);
 
-        $this->assertEquals('Message', $translator->translate('message'));
+        $this->assertEquals('Message', $translator->translate('key.message'));
     }
 }

@@ -13,7 +13,9 @@ class ArrayTranslationLoaderTest extends AbstractTranslationLoaderTest
     protected function setUp(): void
     {
         $this->loader = new ArrayTranslationLoader([
-            'message' => 'Message',
+            'key' => [
+                'message' => 'Message',
+            ],
         ]);
     }
 

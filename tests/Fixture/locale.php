@@ -1,5 +1,7 @@
 <?php
 
 return [
-    'message' => 'Message'
+    'key' => [
+        'message' => 'Message'
+    ]
 ];
